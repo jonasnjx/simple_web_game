@@ -1,4 +1,4 @@
-![Header Image](https://github.com/jonasnjx/simple_web_game/blob/bb5f757a2a425486ed11777c9b06e7f8d2cce6fc/assets/game.png)
+![Header Image](https://github.com/jonasnjx/simple_web_game/blob/a9dda8c03642930b3e160a1fa612495d5b5a0caa/assets/game.png)
 
 # Introduction
 A simple spongbob-themed typing game.
