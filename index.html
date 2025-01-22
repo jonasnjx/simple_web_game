@@ -134,7 +134,9 @@
             timer = setInterval(updateTime, 1000);
 
             bgMusic.volume = 0.5;
-            bgMusic.play().catch(error => console.log("Playback error:", error));
+            document.addEventListener("click", () => {
+                bgMusic.play().catch(error => console.log("Playback error:", error));
+            });
         }
 
         function updateTime() {
