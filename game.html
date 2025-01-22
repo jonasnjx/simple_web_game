@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer Typing Speed Game</title>
+    <style>
+        body {
+            background: url('assets/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Poppins', sans-serif !important;
+            text-align: center;
+        }
+        .raceTrack {
+            width: 100%;
+            height: 100px;
+            background: lightgray;
+            position: relative;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+        .character {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            top: 25px;
+            left: 0;
+            transition: left 0.3s ease-in-out;
+        }
+        .finishLine {
+            position: absolute;
+            right: 100px;
+            top: 0;
+            height: 100px;
+            width: 10px;
+            background: red;
+        }
+        .endImage {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            width: 80px;
+            height: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div style="background-color: #E07B39; color: white; font-weight: bold; padding: 30px; margin-bottom: 30px; font-size: 40px; text-align: center;">🏁🏁 Race to the Pineapple House! 🏁🏁</div>
+    <div style="background: rgba(0, 0, 0, 0.8); color: white; padding: 20px; border-radius: 10px; display: block; width: 50%; margin: 20px auto; text-align: center; margin: 20px 0; margin-left: auto; margin-right: auto;">
+        <p>Type the word shown below:</p>
+        <h2 id="word" style="background-color: black; color: white; font-weight: bold; padding: 10px; display: block; width: 90%; margin: 0 auto; border-radius: 5px;"></h2>
+    </div>
+    
+    <div style="background: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 50px; margin-bottom: 20px; display: block; width: 90%; margin-left: auto; margin-right: auto;">
+        <p>🎮 Player 1</p>
+        <input type="text" id="inputBox1" autofocus>
+        <div class="raceTrack" style="position: relative;">
+            <img id="character1" class="character" src="assets/patrick-star.png" alt="Character 1">
+            <div class="finishLine"></div>
+            <img class="endImage" src="assets/finish.png" alt="Finish Image">
+        </div>
+    </div>
+    
+    <div style="background: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 50px; margin-bottom: 20px; display: block; width: 90%; margin-left: auto; margin-right: auto;">
+        <p>🎮 Player 2</p>
+        <input type="text" id="inputBox2">
+        <div class="raceTrack">
+            <img id="character2" class="character" src="assets/spongebob.png" alt="Character 2">
+            <div class="finishLine"></div>
+            <img class="endImage" src="assets/finish.png" alt="Finish Image">
+        </div>
+    </div>
+
+    <p id="timeDisplay" style="background: #DC143C; color: white; font-weight: bold; font-size: 20px; padding: 10px 20px; border-radius: 10px; display: inline-block;">
+        Time Left: <span id="time">60</span>s
+    </p>
+    
+    <button onclick="restartGame()" style="background: #228B22; color: white; font-weight: bold; font-size: 20px; padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s ease;">
+        Restart
+    </button>
+    
+    <audio id="bgMusic" loop>
+        <source src="assets/background-music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    
+    <script>
+        const words = [
+            "javascript", "developer", "keyboard", "function",
+            "variable", "loop", "document", "object", "event", "listener"
+        ];
+        
+        let currentWord = "";
+        let timeLeft = 60;
+        let timer;
+        function updateTime() {
+            if (timeLeft > 0) {
+                timeLeft--;
+                timeDisplay.innerText = timeLeft;
+            } else {
+                clearInterval(timer);
+                inputBox1.disabled = true;
+                inputBox2.disabled = true;
+                bgMusic.pause();
+                alert("Time's up! It's a draw.");
+            }
+        }
+        let characterPosition1 = 0;
+        let characterPosition2 = 0;
+
+        const wordDisplay = document.getElementById("word");
+        const inputBox1 = document.getElementById("inputBox1");
+        const inputBox2 = document.getElementById("inputBox2");
+        const timeDisplay = document.getElementById("time");
+        const bgMusic = document.getElementById("bgMusic");
+        const character1 = document.getElementById("character1");
+        const character2 = document.getElementById("character2");
+        const finishLines = document.querySelectorAll(".finishLine");
+
+        function startGame() {
+            clearInterval(timer); // Ensure the previous timer is cleared
+            timeLeft = 60;
+            characterPosition1 = 0;
+            characterPosition2 = 0;
+            character1.style.left = "0px";
+            character2.style.left = "0px";
+            inputBox1.value = "";
+            inputBox2.value = "";
+            inputBox1.disabled = false;
+            inputBox2.disabled = false;
+            nextWord();
+
+            // Start the countdown
+            timer = setInterval(updateTime, 1000);
+
+            bgMusic.volume = 0.5;
+            bgMusic.play().catch(error => console.log("Playback error:", error));
+        }
+
+        function updateTime() {
+            if (timeLeft > 0) {
+                timeLeft--;
+                document.getElementById("time").innerText = timeLeft; // Ensure time updates correctly
+            } else {
+                clearInterval(timer);
+                inputBox1.disabled = true;
+                inputBox2.disabled = true;
+                bgMusic.pause();
+                alert("Time's up! It's a draw.");
+            }
+        }
+
+
+        function nextWord() {
+            currentWord = words[Math.floor(Math.random() * words.length)];
+            wordDisplay.innerText = currentWord;
+            inputBox1.value = "";
+            inputBox2.value = "";
+        }
+
+        function typingGame(player) {
+            function endGame(winner) {
+                clearInterval(timer);
+                inputBox1.disabled = true;
+                inputBox2.disabled = true;
+                bgMusic.pause();
+                alert(winner + ' wins the race!');
+            }
+            let inputText = player === 1 ? inputBox1.value : inputBox2.value;
+            if (inputText === currentWord) {
+                if (player === 1) {
+                    characterPosition1 += 50;
+                    character1.style.left = characterPosition1 + "px";
+                } else {
+                    characterPosition2 += 50;
+                    character2.style.left = characterPosition2 + "px";
+                }
+                
+                if (characterPosition1 >= document.querySelector('.raceTrack').offsetWidth - character1.offsetWidth - 10) {
+                    endGame("Player 1");
+                } else if (characterPosition2 >= document.querySelector('.raceTrack').offsetWidth - character2.offsetWidth - 10) {
+                    endGame("Player 2");
+                } else {
+                    nextWord();
+                }
+            }
+        }
+
+        function endGame(winner) {
+            clearInterval(timer);
+            inputBox1.disabled = true;
+            inputBox2.disabled = true;
+            bgMusic.pause();
+            alert(winner + " wins the race!");
+        }
+
+        function restartGame() {
+            clearInterval(timer);
+            startGame();
+        }
+
+        inputBox1.addEventListener("input", () => typingGame(1));
+        inputBox2.addEventListener("input", () => typingGame(2));
+
+        startGame();
+    </script>
+    <footer style="background: rgba(211, 211, 211, 0.8); color: black; text-align: center; padding: 10px; margin-top: 20px; font-size: 12px; border-radius: 5px;"
+        Created by <strong>&copy; Made by jonasnjx </strong>
+    </footer>
+</body>
+</html>
